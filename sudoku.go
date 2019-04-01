@@ -3,8 +3,9 @@ package main
 import "fmt"
 
 type grid struct {
-	data  [][][]int
-	empty int
+	data   [][][]int
+	solved int
+	hints  int
 }
 
 func main() {
@@ -21,28 +22,60 @@ func main() {
 			{{}, {}, {}, {}, {}, {}, {5}, {4}, {}},
 			{{}, {1}, {}, {}, {7}, {2}, {}, {8}, {6}},
 		},
-		empty: 81,
+		solved: 0,
+		hints:  0,
 	}
 
-	g.empty = initPencilMarks(g.data)
+	initPencilMarks(g.data)
 	reducePencilMarks(g.data)
+	g.hints = countHints(g.data)
+	prevHints := g.hints
+	for {
+		prevHints = g.hints
+		reducePencilMarks(g.data)
+		g.hints = countHints(g.data)
+		if prevHints == g.hints {
+			break
+		}
+	}
+	g.solved = countSolved(g.data)
 	for i := 0; i < 9; i++ {
 		fmt.Println(g.data[i])
-		fmt.Println(g.empty)
 	}
+	fmt.Println(g.solved)
+	fmt.Println(g.hints)
 }
 
-func initPencilMarks(grid [][][]int) int {
-	empty := 0
+func initPencilMarks(grid [][][]int) {
 	for i := 0; i < 9; i++ {
 		for j := 0; j < 9; j++ {
 			if len(grid[i][j]) == 0 {
 				grid[i][j] = []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
-				empty++
 			}
 		}
 	}
-	return empty
+}
+
+func countSolved(grid [][][]int) int {
+	solved := 0
+	for i := 0; i < 9; i++ {
+		for j := 0; j < 9; j++ {
+			if len(grid[i][j]) == 1 {
+				solved++
+			}
+		}
+	}
+	return solved
+}
+
+func countHints(grid [][][]int) int {
+	hints := 0
+	for i := 0; i < 9; i++ {
+		for j := 0; j < 9; j++ {
+			hints += len(grid[i][j])
+		}
+	}
+	return hints
 }
 
 func reducePencilMarks(grid [][][]int) {
@@ -73,7 +106,23 @@ func reducePencilMarks(grid [][][]int) {
 						}
 					}
 				}
-				// TODO: clear box
+				same := 3*(i%3) + (j % 3)
+				for k := 0; k < 9; k++ {
+					if k == same {
+						continue
+					}
+					check_i := ((k) / 3) + 3*(i/3)
+					check_j := ((k) % 3) + 3*(j/3)
+					for y := 0; y < len(grid[check_i][check_j]); y++ {
+						if grid[check_i][check_j][y] == grid[i][j][0] {
+							grid[check_i][check_j] = append(grid[check_i][check_j][:y], grid[check_i][check_j][y+1:]...)
+							break
+						}
+
+					}
+
+				}
+
 			}
 		}
 	}

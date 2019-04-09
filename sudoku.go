@@ -150,3 +150,18 @@ func tuple_remove(grid [][]int) {
         }
     }
 }
+
+func wrapColumn(grid [][][]int, column int) [][]int {
+    result := [][]int{}
+    for row := 0; row < 9; row++ {
+        result = append(result, grid[row][column])
+    }
+    return result
+}
+
+func unwrapColumn(grid [][][]int, column_data [][]int, column_num int) [][][]int {
+    for row := 0; row < 9; row++ {
+        grid[row][column_num] = column_data[row]
+    }
+    return grid
+}

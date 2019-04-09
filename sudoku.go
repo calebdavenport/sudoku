@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+    "fmt"
+    "reflect"
+)
 
 type grid struct {
 	data   [][][]int
@@ -79,6 +82,7 @@ func countHints(grid [][][]int) int {
 
 func reducePencilMarks(grid [][][]int) {
 	for i := 0; i < 9; i++ {
+        tuple_remove(grid[i])
 		for j := 0; j < 9; j++ {
 			if len(grid[i][j]) == 1 {
 				// Clear row
@@ -125,4 +129,24 @@ func reducePencilMarks(grid [][][]int) {
 			}
 		}
 	}
+}
+
+func tuple_remove(grid [][]int) {
+    // Only works with rows for now
+    for i := 0; i < 8; i++ {
+        for j := i + 1; j < 9; j++ {
+            if reflect.DeepEqual(grid[i], grid[j]) && len(grid[i]) == 2 {
+                for x := 0; x < 9; x++ {
+                    if x == i || x == j {
+                        continue
+                    }
+                    for y := 0; y < len(grid[x]); y++ {
+                        if grid[x][y] == grid[i][0] || grid[x][y] == grid[i][1] {
+							grid[x] = append(grid[x][:y], grid[x][y+1:]...)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

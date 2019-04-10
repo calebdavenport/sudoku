@@ -82,33 +82,15 @@ func countHints(grid [][][]int) int {
 
 func reducePencilMarks(grid [][][]int) {
 	for i := 0; i < 9; i++ {
-        tuple_remove(grid[i])
+        grid[i] = tuple_remove(grid[i])
+        grid[i] = trivial_reduce(grid[i])
+        column := wrapColumn(grid, i)
+        column = trivial_reduce(column)
+        grid = unwrapColumn(grid, column, i)
+
 		for j := 0; j < 9; j++ {
 			if len(grid[i][j]) == 1 {
-				// Clear row
-				for k := 0; k < 9; k++ {
-					if k == j {
-						continue
-					}
-					for y := 0; y < len(grid[i][k]); y++ {
-						if grid[i][k][y] == grid[i][j][0] {
-							grid[i][k] = append(grid[i][k][:y], grid[i][k][y+1:]...)
-							break
-						}
-					}
-				}
-				// Clear column
-				for k := 0; k < 9; k++ {
-					if k == i {
-						continue
-					}
-					for y := 0; y < len(grid[k][j]); y++ {
-						if grid[k][j][y] == grid[i][j][0] {
-							grid[k][j] = append(grid[k][j][:y], grid[k][j][y+1:]...)
-							break
-						}
-					}
-				}
+                // Clear Box
 				same := 3*(i%3) + (j % 3)
 				for k := 0; k < 9; k++ {
 					if k == same {
@@ -131,7 +113,28 @@ func reducePencilMarks(grid [][][]int) {
 	}
 }
 
-func tuple_remove(grid [][]int) {
+func trivial_reduce(grid [][]int) [][]int {
+    for pivot := 0; pivot < 9; pivot++ {
+        if len(grid[pivot]) > 1 {
+            continue
+        }
+        for check := 0; check < 9; check++ {
+            if pivot == check {
+                continue
+            }
+            for i := 0; i < len(grid[check]); i++ {
+                if grid[check][i] == grid[pivot][0] {
+                    grid[check] = append(grid[check][:i], grid[check][i+1:]...)
+                    break
+                }
+            }
+        }
+    }
+    return grid
+}
+
+
+func tuple_remove(grid [][]int) [][]int {
     // Only works with rows for now
     for i := 0; i < 8; i++ {
         for j := i + 1; j < 9; j++ {
@@ -149,6 +152,7 @@ func tuple_remove(grid [][]int) {
             }
         }
     }
+    return grid
 }
 
 func wrapColumn(grid [][][]int, column int) [][]int {

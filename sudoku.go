@@ -87,29 +87,9 @@ func reducePencilMarks(grid [][][]int) {
 		column := wrapColumn(grid, i)
 		column = trivial_reduce(column)
 		grid = unwrapColumn(grid, column, i)
-
-		for j := 0; j < 9; j++ {
-			if len(grid[i][j]) == 1 {
-				// Clear Box
-				same := 3*(i%3) + (j % 3)
-				for k := 0; k < 9; k++ {
-					if k == same {
-						continue
-					}
-					check_i := ((k) / 3) + 3*(i/3)
-					check_j := ((k) % 3) + 3*(j/3)
-					for y := 0; y < len(grid[check_i][check_j]); y++ {
-						if grid[check_i][check_j][y] == grid[i][j][0] {
-							grid[check_i][check_j] = append(grid[check_i][check_j][:y], grid[check_i][check_j][y+1:]...)
-							break
-						}
-
-					}
-
-				}
-
-			}
-		}
+		box := wrapBox(grid, i)
+		box = trivial_reduce(box)
+		grid = unwrapBox(grid, box, i)
 	}
 }
 
@@ -165,6 +145,21 @@ func wrapColumn(grid [][][]int, column int) [][]int {
 func unwrapColumn(grid [][][]int, column_data [][]int, column_num int) [][][]int {
 	for row := 0; row < 9; row++ {
 		grid[row][column_num] = column_data[row]
+	}
+	return grid
+}
+
+func wrapBox(grid [][][]int, box int) [][]int {
+	result := [][]int{}
+	for i := 0; i < 9; i++ {
+		result = append(result, grid[3*(box/3)+(i/3)][3*(box%3)+(i%3)])
+	}
+	return result
+}
+
+func unwrapBox(grid [][][]int, box_data [][]int, box_num int) [][][]int {
+	for i := 0; i < 9; i++ {
+		grid[3*(box_num/3)+(i/3)][3*(box_num%3)+(i%3)] = box_data[i]
 	}
 	return grid
 }

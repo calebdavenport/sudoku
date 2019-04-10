@@ -1,8 +1,8 @@
 package main
 
 import (
-    "fmt"
-    "reflect"
+	"fmt"
+	"reflect"
 )
 
 type grid struct {
@@ -82,15 +82,15 @@ func countHints(grid [][][]int) int {
 
 func reducePencilMarks(grid [][][]int) {
 	for i := 0; i < 9; i++ {
-        grid[i] = tuple_remove(grid[i])
-        grid[i] = trivial_reduce(grid[i])
-        column := wrapColumn(grid, i)
-        column = trivial_reduce(column)
-        grid = unwrapColumn(grid, column, i)
+		grid[i] = tuple_remove(grid[i])
+		grid[i] = trivial_reduce(grid[i])
+		column := wrapColumn(grid, i)
+		column = trivial_reduce(column)
+		grid = unwrapColumn(grid, column, i)
 
 		for j := 0; j < 9; j++ {
 			if len(grid[i][j]) == 1 {
-                // Clear Box
+				// Clear Box
 				same := 3*(i%3) + (j % 3)
 				for k := 0; k < 9; k++ {
 					if k == same {
@@ -114,58 +114,57 @@ func reducePencilMarks(grid [][][]int) {
 }
 
 func trivial_reduce(grid [][]int) [][]int {
-    for pivot := 0; pivot < 9; pivot++ {
-        if len(grid[pivot]) > 1 {
-            continue
-        }
-        for check := 0; check < 9; check++ {
-            if pivot == check {
-                continue
-            }
-            for i := 0; i < len(grid[check]); i++ {
-                if grid[check][i] == grid[pivot][0] {
-                    grid[check] = append(grid[check][:i], grid[check][i+1:]...)
-                    break
-                }
-            }
-        }
-    }
-    return grid
+	for pivot := 0; pivot < 9; pivot++ {
+		if len(grid[pivot]) > 1 {
+			continue
+		}
+		for check := 0; check < 9; check++ {
+			if pivot == check {
+				continue
+			}
+			for i := 0; i < len(grid[check]); i++ {
+				if grid[check][i] == grid[pivot][0] {
+					grid[check] = append(grid[check][:i], grid[check][i+1:]...)
+					break
+				}
+			}
+		}
+	}
+	return grid
 }
 
-
 func tuple_remove(grid [][]int) [][]int {
-    // Only works with rows for now
-    for i := 0; i < 8; i++ {
-        for j := i + 1; j < 9; j++ {
-            if reflect.DeepEqual(grid[i], grid[j]) && len(grid[i]) == 2 {
-                for x := 0; x < 9; x++ {
-                    if x == i || x == j {
-                        continue
-                    }
-                    for y := 0; y < len(grid[x]); y++ {
-                        if grid[x][y] == grid[i][0] || grid[x][y] == grid[i][1] {
+	// Only works with rows for now
+	for i := 0; i < 8; i++ {
+		for j := i + 1; j < 9; j++ {
+			if reflect.DeepEqual(grid[i], grid[j]) && len(grid[i]) == 2 {
+				for x := 0; x < 9; x++ {
+					if x == i || x == j {
+						continue
+					}
+					for y := 0; y < len(grid[x]); y++ {
+						if grid[x][y] == grid[i][0] || grid[x][y] == grid[i][1] {
 							grid[x] = append(grid[x][:y], grid[x][y+1:]...)
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return grid
+						}
+					}
+				}
+			}
+		}
+	}
+	return grid
 }
 
 func wrapColumn(grid [][][]int, column int) [][]int {
-    result := [][]int{}
-    for row := 0; row < 9; row++ {
-        result = append(result, grid[row][column])
-    }
-    return result
+	result := [][]int{}
+	for row := 0; row < 9; row++ {
+		result = append(result, grid[row][column])
+	}
+	return result
 }
 
 func unwrapColumn(grid [][][]int, column_data [][]int, column_num int) [][][]int {
-    for row := 0; row < 9; row++ {
-        grid[row][column_num] = column_data[row]
-    }
-    return grid
+	for row := 0; row < 9; row++ {
+		grid[row][column_num] = column_data[row]
+	}
+	return grid
 }

@@ -82,84 +82,79 @@ func countHints(grid [][][]int) int {
 
 func reducePencilMarks(grid [][][]int) {
 	for i := 0; i < 9; i++ {
-		grid[i] = tuple_remove(grid[i])
-		grid[i] = trivial_reduce(grid[i])
+		row := wrapRow(grid, i)
+		tuple_remove(row)
+		trivial_reduce(row)
+
 		column := wrapColumn(grid, i)
-		column = trivial_reduce(column)
-		grid = unwrapColumn(grid, column, i)
+		trivial_reduce(column)
+		tuple_remove(column)
+
 		box := wrapBox(grid, i)
-		box = trivial_reduce(box)
-		grid = unwrapBox(grid, box, i)
+		trivial_reduce(box)
+		tuple_remove(box)
 	}
 }
 
-func trivial_reduce(grid [][]int) [][]int {
+func trivial_reduce(grid []*[]int) {
 	for pivot := 0; pivot < 9; pivot++ {
-		if len(grid[pivot]) > 1 {
+		if len(*grid[pivot]) > 1 {
 			continue
 		}
 		for check := 0; check < 9; check++ {
 			if pivot == check {
 				continue
 			}
-			for i := 0; i < len(grid[check]); i++ {
-				if grid[check][i] == grid[pivot][0] {
-					grid[check] = append(grid[check][:i], grid[check][i+1:]...)
+			for i := 0; i < len(*grid[check]); i++ {
+				if (*grid[check])[i] == (*grid[pivot])[0] {
+					*grid[check] = append((*grid[check])[:i], (*grid[check])[i+1:]...)
 					break
 				}
 			}
 		}
 	}
-	return grid
 }
 
-func tuple_remove(grid [][]int) [][]int {
+func tuple_remove(grid []*[]int) {
 	// Only works with rows for now
 	for i := 0; i < 8; i++ {
 		for j := i + 1; j < 9; j++ {
-			if reflect.DeepEqual(grid[i], grid[j]) && len(grid[i]) == 2 {
+			if reflect.DeepEqual(*grid[i], *grid[j]) && len(*grid[i]) == 2 {
 				for x := 0; x < 9; x++ {
 					if x == i || x == j {
 						continue
 					}
-					for y := 0; y < len(grid[x]); y++ {
-						if grid[x][y] == grid[i][0] || grid[x][y] == grid[i][1] {
-							grid[x] = append(grid[x][:y], grid[x][y+1:]...)
+					for y := 0; y < len(*grid[x]); y++ {
+						if (*grid[x])[y] == (*grid[i])[0] || (*grid[x])[y] == (*grid[i])[1] {
+							*grid[x] = append((*grid[x])[:y], (*grid[x])[y+1:]...)
 						}
 					}
 				}
 			}
 		}
 	}
-	return grid
 }
 
-func wrapColumn(grid [][][]int, column int) [][]int {
-	result := [][]int{}
-	for row := 0; row < 9; row++ {
-		result = append(result, grid[row][column])
+func wrapRow(grid [][][]int, row int) []*[]int {
+	result := []*[]int{}
+	for column := 0; column < 9; column++ {
+		result = append(result, &grid[row][column])
 	}
 	return result
 }
 
-func unwrapColumn(grid [][][]int, column_data [][]int, column_num int) [][][]int {
+func wrapColumn(grid [][][]int, column int) []*[]int {
+	result := []*[]int{}
 	for row := 0; row < 9; row++ {
-		grid[row][column_num] = column_data[row]
-	}
-	return grid
-}
-
-func wrapBox(grid [][][]int, box int) [][]int {
-	result := [][]int{}
-	for i := 0; i < 9; i++ {
-		result = append(result, grid[3*(box/3)+(i/3)][3*(box%3)+(i%3)])
+		result = append(result, &grid[row][column])
 	}
 	return result
 }
 
-func unwrapBox(grid [][][]int, box_data [][]int, box_num int) [][][]int {
+func wrapBox(grid [][][]int, box int) []*[]int {
+	result := []*[]int{}
 	for i := 0; i < 9; i++ {
-		grid[3*(box_num/3)+(i/3)][3*(box_num%3)+(i%3)] = box_data[i]
+		result = append(result, &grid[3*(box/3)+(i/3)][3*(box%3)+(i%3)])
 	}
-	return grid
+	return result
 }

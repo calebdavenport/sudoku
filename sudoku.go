@@ -83,16 +83,19 @@ func countHints(grid [][][]int) int {
 func reducePencilMarks(grid [][][]int) {
 	for i := 0; i < 9; i++ {
 		row := wrapRow(grid, i)
-		exclusive_pair(row)
 		trivial_reduce(row)
+		exclusive_pair(row)
+		unique_hint(row)
 
 		column := wrapColumn(grid, i)
 		trivial_reduce(column)
 		exclusive_pair(column)
+		unique_hint(column)
 
 		box := wrapBox(grid, i)
 		trivial_reduce(box)
 		exclusive_pair(box)
+		unique_hint(box)
 	}
 }
 
@@ -130,6 +133,20 @@ func exclusive_pair(grid []*[]int) {
 					}
 				}
 			}
+		}
+	}
+}
+
+func unique_hint(grid []*[]int) {
+	counter := make(map[int][]int)
+	for i := 0; i < 9; i++ {
+		for hint := 0; hint < len(*grid[i]); hint++ {
+			counter[(*grid[i])[hint]] = append(counter[(*grid[i])[hint]], i)
+		}
+	}
+	for k, v := range counter {
+		if len(v) == 1 {
+			*grid[v[0]] = []int{k}
 		}
 	}
 }

@@ -83,16 +83,16 @@ func countHints(grid [][][]int) int {
 func reducePencilMarks(grid [][][]int) {
 	for i := 0; i < 9; i++ {
 		row := wrapRow(grid, i)
-		tuple_remove(row)
+		exclusive_pair(row)
 		trivial_reduce(row)
 
 		column := wrapColumn(grid, i)
 		trivial_reduce(column)
-		tuple_remove(column)
+		exclusive_pair(column)
 
 		box := wrapBox(grid, i)
 		trivial_reduce(box)
-		tuple_remove(box)
+		exclusive_pair(box)
 	}
 }
 
@@ -115,8 +115,7 @@ func trivial_reduce(grid []*[]int) {
 	}
 }
 
-func tuple_remove(grid []*[]int) {
-	// Only works with rows for now
+func exclusive_pair(grid []*[]int) {
 	for i := 0; i < 8; i++ {
 		for j := i + 1; j < 9; j++ {
 			if reflect.DeepEqual(*grid[i], *grid[j]) && len(*grid[i]) == 2 {

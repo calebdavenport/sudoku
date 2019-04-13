@@ -48,6 +48,8 @@ func main() {
 	fmt.Println(g.hints)
 }
 
+// Mark all empty slices as [1...9]
+// Hints are pruned in other functions such as trivial_reduce()
 func initPencilMarks(grid [][][]int) {
 	for i := 0; i < 9; i++ {
 		for j := 0; j < 9; j++ {
@@ -58,6 +60,8 @@ func initPencilMarks(grid [][][]int) {
 	}
 }
 
+// Return the number of solved squares
+// 81 denotes a solved puzzle
 func countSolved(grid [][][]int) int {
 	solved := 0
 	for i := 0; i < 9; i++ {
@@ -70,6 +74,9 @@ func countSolved(grid [][][]int) int {
 	return solved
 }
 
+// Return the total number of possible values
+// This includes already known values
+// Thus, this will return a minimum of 81
 func countHints(grid [][][]int) int {
 	hints := 0
 	for i := 0; i < 9; i++ {
@@ -80,6 +87,7 @@ func countHints(grid [][][]int) int {
 	return hints
 }
 
+// Run the solving functions
 func reducePencilMarks(grid [][][]int) {
 	for i := 0; i < 9; i++ {
 		row := wrapRow(grid, i)
@@ -99,6 +107,10 @@ func reducePencilMarks(grid [][][]int) {
 	}
 }
 
+// Remove known numbers from hints in the same row/column/box
+// [1] [1 2] [1 3] [1 4] [1 5] [1 6] [1 7] [1 8] [1 9]
+// is converted to:
+// [1] [2] [3] [4] [5] [6] [7] [8] [9]
 func trivial_reduce(grid []*[]int) {
 	for pivot := 0; pivot < 9; pivot++ {
 		if len(*grid[pivot]) > 1 {
@@ -118,6 +130,10 @@ func trivial_reduce(grid []*[]int) {
 	}
 }
 
+// Remove hints if 2 identical pairs of hints are found
+// [1 2] [1 2] [3] [4] [5] [6] [2 7] [1 8] [1 2 9]
+// is converted to:
+// [1 2] [1 2] [3] [4] [5] [6] [7] [8] [9]
 func exclusive_pair(grid []*[]int) {
 	for i := 0; i < 8; i++ {
 		for j := i + 1; j < 9; j++ {
@@ -137,6 +153,10 @@ func exclusive_pair(grid []*[]int) {
 	}
 }
 
+// Mark square as known if number occurs only within that square's hint
+// [1 2 3 4] [2 3 4] [2 3 4] [3 4 5] [4 5] [6] [7] [8] [9]
+// is converted to:
+// [1] [2 3 4] [2 3 4] [3 4 5] [4 5] [6] [7] [8] [9]
 func unique_hint(grid []*[]int) {
 	counter := make(map[int][]int)
 	for i := 0; i < 9; i++ {
@@ -151,6 +171,7 @@ func unique_hint(grid []*[]int) {
 	}
 }
 
+// Wrap a row of the grid into an array of pointers
 func wrapRow(grid [][][]int, row int) []*[]int {
 	result := []*[]int{}
 	for column := 0; column < 9; column++ {
@@ -159,6 +180,7 @@ func wrapRow(grid [][][]int, row int) []*[]int {
 	return result
 }
 
+// Wrap a column of the grid into an array of pointers
 func wrapColumn(grid [][][]int, column int) []*[]int {
 	result := []*[]int{}
 	for row := 0; row < 9; row++ {
@@ -167,6 +189,7 @@ func wrapColumn(grid [][][]int, column int) []*[]int {
 	return result
 }
 
+// Wrap a box of the grid into an array of pointers
 func wrapBox(grid [][][]int, box int) []*[]int {
 	result := []*[]int{}
 	for i := 0; i < 9; i++ {

@@ -145,6 +145,7 @@ func exclusive_pair(grid []*[]int) {
 					for y := 0; y < len(*grid[x]); y++ {
 						if (*grid[x])[y] == (*grid[i])[0] || (*grid[x])[y] == (*grid[i])[1] {
 							*grid[x] = append((*grid[x])[:y], (*grid[x])[y+1:]...)
+							y--
 						}
 					}
 				}

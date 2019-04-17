@@ -49,7 +49,7 @@ func main() {
 }
 
 // Mark all empty slices as [1...9]
-// Hints are pruned in other functions such as trivial_reduce()
+// Hints are pruned in other functions such as trivialReduce()
 func initPencilMarks(grid [][][]int) {
 	for i := 0; i < 9; i++ {
 		for j := 0; j < 9; j++ {
@@ -91,19 +91,19 @@ func countHints(grid [][][]int) int {
 func reducePencilMarks(grid [][][]int) {
 	for i := 0; i < 9; i++ {
 		row := wrapRow(grid, i)
-		trivial_reduce(row)
-		exclusive_pair(row)
-		unique_hint(row)
+		trivialReduce(row)
+		exclusivePair(row)
+		uniqueHint(row)
 
 		column := wrapColumn(grid, i)
-		trivial_reduce(column)
-		exclusive_pair(column)
-		unique_hint(column)
+		trivialReduce(column)
+		exclusivePair(column)
+		uniqueHint(column)
 
 		box := wrapBox(grid, i)
-		trivial_reduce(box)
-		exclusive_pair(box)
-		unique_hint(box)
+		trivialReduce(box)
+		exclusivePair(box)
+		uniqueHint(box)
 	}
 }
 
@@ -111,7 +111,7 @@ func reducePencilMarks(grid [][][]int) {
 // [1] [1 2] [1 3] [1 4] [1 5] [1 6] [1 7] [1 8] [1 9]
 // is converted to:
 // [1] [2] [3] [4] [5] [6] [7] [8] [9]
-func trivial_reduce(grid []*[]int) {
+func trivialReduce(grid []*[]int) {
 	for pivot := 0; pivot < 9; pivot++ {
 		if len(*grid[pivot]) > 1 {
 			continue
@@ -134,7 +134,7 @@ func trivial_reduce(grid []*[]int) {
 // [1 2] [1 2] [3] [4] [5] [6] [2 7] [1 8] [1 2 9]
 // is converted to:
 // [1 2] [1 2] [3] [4] [5] [6] [7] [8] [9]
-func exclusive_pair(grid []*[]int) {
+func exclusivePair(grid []*[]int) {
 	for i := 0; i < 8; i++ {
 		for j := i + 1; j < 9; j++ {
 			if reflect.DeepEqual(*grid[i], *grid[j]) && len(*grid[i]) == 2 {
@@ -158,7 +158,7 @@ func exclusive_pair(grid []*[]int) {
 // [1 2 3 4] [2 3 4] [2 3 4] [3 4 5] [4 5] [6] [7] [8] [9]
 // is converted to:
 // [1] [2 3 4] [2 3 4] [3 4 5] [4 5] [6] [7] [8] [9]
-func unique_hint(grid []*[]int) {
+func uniqueHint(grid []*[]int) {
 	counter := make(map[int][]int)
 	for i := 0; i < 9; i++ {
 		for hint := 0; hint < len(*grid[i]); hint++ {
